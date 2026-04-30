@@ -9,8 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SplitRouteImport } from './routes/split'
+import { Route as MergeRouteImport } from './routes/merge'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SplitRoute = SplitRouteImport.update({
+  id: '/split',
+  path: '/split',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MergeRoute = MergeRouteImport.update({
+  id: '/merge',
+  path: '/merge',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +31,50 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/merge': typeof MergeRoute
+  '/split': typeof SplitRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/merge': typeof MergeRoute
+  '/split': typeof SplitRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/merge': typeof MergeRoute
+  '/split': typeof SplitRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/merge' | '/split'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/merge' | '/split'
+  id: '__root__' | '/' | '/merge' | '/split'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MergeRoute: typeof MergeRoute
+  SplitRoute: typeof SplitRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/split': {
+      id: '/split'
+      path: '/split'
+      fullPath: '/split'
+      preLoaderRoute: typeof SplitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/merge': {
+      id: '/merge'
+      path: '/merge'
+      fullPath: '/merge'
+      preLoaderRoute: typeof MergeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +87,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MergeRoute: MergeRoute,
+  SplitRoute: SplitRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
