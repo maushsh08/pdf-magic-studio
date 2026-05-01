@@ -21,9 +21,10 @@ import { Upload, FileText, Image as ImageIcon, GripVertical, Trash2, Combine, Lo
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import { mergeFiles, downloadBlob, type MergeItem } from "@/lib/pdf";
+import { mergeFiles, downloadBlob, COMPRESSION_PRESETS, type MergeItem } from "@/lib/pdf";
 
 export const Route = createFileRoute("/merge")({
   component: MergePage,
@@ -93,6 +94,8 @@ function MergePage() {
   const [progress, setProgress] = useState(0);
   const [busy, setBusy] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [compress, setCompress] = useState(false);
+  const [preset, setPreset] = useState<"high" | "medium" | "low">("medium");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const sensors = useSensors(
@@ -128,9 +131,15 @@ function MergePage() {
     setBusy(true);
     setProgress(0);
     try {
-      const bytes = await mergeFiles(items, (p) => setProgress(Math.round(p * 100)));
+      const opts = compress ? COMPRESSION_PRESETS[preset] : undefined;
+      const bytes = await mergeFiles(
+        items,
+        (p) => setProgress(Math.round(p * 100)),
+        opts,
+      );
       downloadBlob(bytes, `merged-${Date.now()}.pdf`);
-      toast.success("結合したPDFをダウンロードしました");
+      const sizeKb = (bytes.byteLength / 1024).toFixed(0);
+      toast.success(`結合完了 (${sizeKb} KB)`);
     } catch (err) {
       console.error(err);
       toast.error("結合に失敗しました。ファイルを確認してください。");
@@ -139,6 +148,8 @@ function MergePage() {
       setTimeout(() => setProgress(0), 800);
     }
   };
+
+  const hasImages = items.some((i) => i.kind === "image");
 
   return (
     <AppShell>
@@ -217,6 +228,62 @@ function MergePage() {
               </div>
             </SortableContext>
           </DndContext>
+        </div>
+      )}
+
+      {items.length > 0 && (
+        <div className="mt-6 rounded-2xl border border-border bg-card p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-sm font-semibold">軽量化（圧縮）</div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                画像の解像度と品質を調整して、メールやLINEで送りやすいサイズに圧縮します。
+              </p>
+            </div>
+            <Switch checked={compress} onCheckedChange={setCompress} aria-label="圧縮を有効化" />
+          </div>
+
+          {compress && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="mt-4"
+            >
+              <div className="grid grid-cols-3 gap-2">
+                {([
+                  { key: "high", label: "強", desc: "最小" },
+                  { key: "medium", label: "中", desc: "推奨" },
+                  { key: "low", label: "弱", desc: "高画質" },
+                ] as const).map((p) => {
+                  const active = preset === p.key;
+                  return (
+                    <button
+                      key={p.key}
+                      type="button"
+                      onClick={() => setPreset(p.key)}
+                      className={`rounded-xl border p-3 text-center transition-colors ${
+                        active
+                          ? "border-primary bg-primary/10 text-foreground"
+                          : "border-border bg-background hover:bg-secondary"
+                      }`}
+                    >
+                      <div className="text-sm font-semibold">{p.label}</div>
+                      <div className="text-[11px] text-muted-foreground mt-0.5">{p.desc}</div>
+                      <div className="text-[10px] text-muted-foreground mt-1">
+                        {COMPRESSION_PRESETS[p.key].maxDimension}px ·{" "}
+                        {Math.round(COMPRESSION_PRESETS[p.key].quality * 100)}%
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              {!hasImages && (
+                <p className="text-[11px] text-muted-foreground mt-3">
+                  ※ 圧縮は画像（JPG/PNG）入力に適用されます。PDF内のページはそのまま保持されます。
+                </p>
+              )}
+            </motion.div>
+          )}
         </div>
       )}
 
