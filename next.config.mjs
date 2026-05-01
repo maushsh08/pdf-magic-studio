@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
+  distDir: 'out', // これを追加：出力フォルダ名を明示的に指定
   images: {
     unoptimized: true,
   },
@@ -8,10 +9,7 @@ const nextConfig = {
   typescript: { 
     ignoreBuildErrors: true 
   },
-  eslint: { 
-    ignoreDuringBuilds: true 
-  },
   trailingSlash: true,
 };
 
-export default nextConfig; // ここを最新の書き方に変更しました
+export default nextConfig;
