@@ -5,7 +5,7 @@ const nextConfig = {
     unoptimized: true, // GitHub Pagesでは画像の最適化が使えないため必須
   },
   // もしURLが https://ユーザー名.github.io/crowd/ のようになるなら、以下も追加
-  basePath: '/crowd', 
+  basePath: '/pdf-magic-studio', 
 };
 
 module.exports = nextConfig;
