@@ -32,8 +32,11 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Build with Next.js
-        # npx を使わず直接ビルドコマンドを叩きます
-        run: npm run build
+        # 前回の残骸を消してからビルドし、中身があるか確認するコマンドを追加
+        run: |
+          rm -rf out
+          npm run build
+          ls -R out # デバッグ用：フォルダの中身をログに表示
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
