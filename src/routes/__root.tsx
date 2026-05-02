@@ -29,14 +29,18 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "PDF Manager — Merge & Split PDFs in your browser" },
+      { title: "PDFマジックスタジオ — Merge & Split PDFs in your browser" },
       { name: "description", content: "Privacy-first PDF tools. Merge, split, and extract pages directly in your browser. No uploads, no servers." },
       { name: "theme-color", content: "#5b6cf0" },
-      { property: "og:title", content: "PDF Manager" },
-      { property: "og:description", content: "Merge and split PDFs entirely in your browser." },
+      { property: "og:title", content: "PDFマジックスタジオ — Merge & Split PDFs in your browser" },
+      { property: "og:description", content: "Privacy-first PDF tools. Merge, split, and extract pages directly in your browser. No uploads, no servers." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "PDFマジックスタジオ — Merge & Split PDFs in your browser" },
+      { name: "twitter:description", content: "Privacy-first PDF tools. Merge, split, and extract pages directly in your browser. No uploads, no servers." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/969c0149-1f6e-44dc-ba9b-80620bd1656f/id-preview-3ef0d022--c2131909-346f-44c5-9879-4f0bac67350d.lovable.app-1777685469883.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/969c0149-1f6e-44dc-ba9b-80620bd1656f/id-preview-3ef0d022--c2131909-346f-44c5-9879-4f0bac67350d.lovable.app-1777685469883.png" },
     ],
     links: [
       {
